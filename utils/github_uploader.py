@@ -12,10 +12,10 @@ def upload_to_github(project_path, data):
     if not repo_name or not github_token or not github_username:
         return {"success": False, "message": "Missing repo name, GitHub token, or GitHub username."}
 
-    # Create repo first
+    # Step 1: Create the GitHub repo via API
     create_repo_result = create_github_repo(repo_name, github_token, github_username)
     if not create_repo_result["success"]:
-        return create_repo_result  # early return if repo creation failed
+        return create_repo_result  # Early return if repo creation failed
     
     full_project_path = os.path.join(BASE_PROJECT_DIR, project_path)
 
@@ -25,15 +25,22 @@ def upload_to_github(project_path, data):
 
         os.chdir(full_project_path)
 
+        # Step 2: Initialize Git and configure user
         subprocess.run(["git", "init"], check=True)
+
+        subprocess.run(["git", "config", "user.name", github_username], check=True)
+        subprocess.run(["git", "config", "user.email", f"{github_username}@users.noreply.github.com"], check=True)
+
+        # Step 3: Add and commit files
         subprocess.run(["git", "add", "."], check=True)
 
         status_result = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True)
         if status_result.stdout.strip():
             subprocess.run(["git", "commit", "-m", "Initial commit"], check=True)
 
+        # Step 4: Add remote (ensure clean state)
         subprocess.run(["git", "remote", "remove", "origin"], check=False)
-        repo_url = f"https://{github_token}@github.com/{github_username}/{repo_name}.git"
+        repo_url = f"https://{github_username}:{github_token}@github.com/{github_username}/{repo_name}.git"
         subprocess.run(["git", "remote", "add", "origin", repo_url], check=True)
 
         subprocess.run(["git", "branch", "-M", "main"], check=True)
@@ -42,6 +49,6 @@ def upload_to_github(project_path, data):
         return {"success": True, "message": "Project uploaded successfully."}
 
     except subprocess.CalledProcessError as e:
-        return {"success": False, "message": f"Git error: {e}"}
+        return {"success": False, "message": f"Git error: {e.stderr or str(e)}"}
     except Exception as e:
         return {"success": False, "message": str(e)}

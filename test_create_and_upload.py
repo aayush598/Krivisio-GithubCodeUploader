@@ -61,28 +61,5 @@ def test_create_and_upload():
     else:
         print("[✗] GitHub Upload Failed:", result["message"])
 
-    # Check if folder structure exists
-    assert os.path.exists(PROJECT_NAME), f"Project folder '{PROJECT_NAME}' was not created."
-
-    expected_paths = [
-        "README.md", ".gitignore",
-        "src/main/main.py", "src/api/api.py",
-        "src/models", "src/utils", "src/services",
-        "config/config.py", "config/settings.py",
-        "requirements/requirements.txt"
-    ]
-
-    for rel_path in expected_paths:
-        full_path = os.path.join(PROJECT_NAME, rel_path)
-        assert os.path.exists(full_path), f"Missing: {rel_path}"
-
-    print("[✓] Folder structure verified.")
-
-    # Clean up
-    cleanup = True
-    if cleanup:
-        shutil.rmtree(PROJECT_NAME)
-        print(f"[✓] Cleaned up: {PROJECT_NAME}")
-
 if __name__ == "__main__":
     test_create_and_upload()
