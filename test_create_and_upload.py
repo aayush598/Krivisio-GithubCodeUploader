@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
-BASE_URL = "http://localhost:8000"
+BASE_URL = "https://krivisio-githubcodeuploader.onrender.com"
 PROJECT_NAME = "chatbot-test"
 
 # Load from environment
