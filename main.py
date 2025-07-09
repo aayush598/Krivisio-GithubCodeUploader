@@ -19,7 +19,7 @@ class ProjectRequest(BaseModel):
 @app.post("/create-and-upload")
 async def create_and_upload_project(data: ProjectRequest):
     try:
-        base_path = os.path.join(os.getcwd(), data.name)
+        base_path = os.path.abspath(os.path.join(os.getcwd(), data.name))
         create_project_structure(base_path, data.structure)
         response = upload_to_github(data.name, data.github_data.dict())
         return response

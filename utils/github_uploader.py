@@ -2,7 +2,7 @@ import os
 import subprocess
 from utils.repo_creator import create_github_repo
 
-BASE_PROJECT_DIR = os.path.abspath(os.getcwd())  # Better path handling
+BASE_PROJECT_DIR = os.path.abspath(os.path.abspath(os.getcwd()))  # Better path handling
 
 def upload_to_github(project_path, data):
     repo_name = data.get('repo_name')
